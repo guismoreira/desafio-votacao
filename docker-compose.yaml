@@ -3,12 +3,12 @@ volumes:
   database:
 services:
   db:
-    image: mysql:latest
-    container_name: votacao-mysql
+    image: mariadb:latest
+    container_name: votacao-mariadb
     ports:
       - 3306:3306
     volumes:
-      - database:/var/lib/mysql
+      - database:/var/lib/mariadb
     environment:
       - MYSQL_ROOT_PASSWORD=votacao
       - MYSQL_DATABASE=votacao
