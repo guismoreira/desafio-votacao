@@ -1,17 +1,13 @@
 package br.tec.db.desafio.business.service;
 
-import br.tec.db.desafio.api.v1.dto.pauta.PautaMapperV1;
-import br.tec.db.desafio.api.v1.dto.pauta.PautaRequestV1;
-import br.tec.db.desafio.api.v1.dto.pauta.PautaResponseV1;
 import br.tec.db.desafio.api.v1.dto.sessao.SessaoMapperV1;
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaCriarRequestV1;
 import br.tec.db.desafio.api.v1.dto.sessao.response.SessaoCriadaResponseV1;
-import br.tec.db.desafio.business.domain.Pauta;
 import br.tec.db.desafio.business.domain.Sessao;
-import br.tec.db.desafio.business.service.implementation.PautaServiceImpl;
 import br.tec.db.desafio.business.service.implementation.SessaoServiceImpl;
-import br.tec.db.desafio.business.service.implementation.validacao.pauta.ValidacaoPauta;
 import br.tec.db.desafio.business.service.implementation.validacao.sessao.ValidacaoSessao;
+import br.tec.db.desafio.repository.AssociadoRepository;
+import br.tec.db.desafio.repository.AssociadoSessaoRepository;
 import br.tec.db.desafio.repository.PautaRepository;
 import br.tec.db.desafio.repository.SessaoRepository;
 import org.junit.jupiter.api.Test;
@@ -32,15 +28,22 @@ public class SessaoServiceImplTest {
     @Mock
     SessaoRepository sessaoRepository;
     @Mock
+    AssociadoRepository associadoRepository;
+    @Mock
+    AssociadoSessaoRepository associadoSessaoRepository;
+    @Mock
     List<ValidacaoSessao> validacoesSessao;
+    private static final String ASSUNTO_PAUTA = "tema da pauta";
+    private static final Long DURACAO_SESSAO = 2L;
+
 
     @Test
     void devePersistirSessaoComSucesso() {
-        SessaoServiceImpl sessaoServiceImpl = new SessaoServiceImpl(sessaoRepository,pautaRepository,validacoesSessao);
+        SessaoServiceImpl sessaoServiceImpl = new SessaoServiceImpl(sessaoRepository,pautaRepository, associadoRepository,associadoSessaoRepository,validacoesSessao);
 
         SessaoParaCriarRequestV1 shouldSessaoRequestV1 =
                 new SessaoParaCriarRequestV1(
-                        "Tema da pauta",
+                        ASSUNTO_PAUTA,
                         2L);
 
         Sessao shouldSessaoRequestV1ToSessao=
@@ -51,8 +54,8 @@ public class SessaoServiceImplTest {
         ).thenReturn(shouldSessaoRequestV1ToSessao);
 
         SessaoParaCriarRequestV1 sessaoRequestV1 = new SessaoParaCriarRequestV1(
-                "Tema da pauta",
-                2L);
+                ASSUNTO_PAUTA,
+                DURACAO_SESSAO);
         Sessao sessaoRequestV1ToPauta =
                 SessaoMapperV1.sessaoParaCriarRequestV1ToSessao(sessaoRequestV1);
 
