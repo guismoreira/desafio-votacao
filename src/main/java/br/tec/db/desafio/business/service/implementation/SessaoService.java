@@ -8,52 +8,40 @@ import br.tec.db.desafio.api.v1.dto.sessao.response.SessaoCriadaResponseV1;
 import br.tec.db.desafio.api.v1.dto.sessao.response.SessaoTotalVotosResponseV1;
 import br.tec.db.desafio.api.v1.dto.sessao.response.SessaoVotadaResponseV1;
 import br.tec.db.desafio.business.domain.Associado;
-import br.tec.db.desafio.business.domain.AssociadoSessao;
 import br.tec.db.desafio.business.domain.Pauta;
 import br.tec.db.desafio.business.domain.Sessao;
-import br.tec.db.desafio.business.service.SessaoService;
-import br.tec.db.desafio.business.service.implementation.validacao.sessao.ValidacaoSessao;
-import br.tec.db.desafio.exception.BusinessException;
+import br.tec.db.desafio.business.service.ISessaoService;
+import br.tec.db.desafio.business.service.implementation.base.BaseSessao;
 import br.tec.db.desafio.repository.AssociadoRepository;
 import br.tec.db.desafio.repository.AssociadoSessaoRepository;
 import br.tec.db.desafio.repository.PautaRepository;
 import br.tec.db.desafio.repository.SessaoRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class SessaoServiceImpl implements SessaoService {
-    private final SessaoRepository sessaoRepository;
-    private final PautaRepository pautaRepository;
-    private final AssociadoRepository associadoRepository;
-    private final AssociadoSessaoRepository associadoSessaoRepository;
-    private final List<ValidacaoSessao> validacoesSessao;
+public class SessaoService extends BaseSessao implements ISessaoService {
 
-    public SessaoServiceImpl(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository, AssociadoSessaoRepository associadoSessaoRepository, List<ValidacaoSessao> validacoesSessao) {
-        this.sessaoRepository = sessaoRepository;
-        this.pautaRepository = pautaRepository;
-        this.associadoRepository = associadoRepository;
-        this.associadoSessaoRepository = associadoSessaoRepository;
-        this.validacoesSessao = validacoesSessao;
+
+    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository, AssociadoSessaoRepository associadoSessaoRepository) {
+        super(sessaoRepository, pautaRepository, associadoRepository, associadoSessaoRepository);
     }
 
     @Override
     public SessaoCriadaResponseV1 criarUmaNovaSessao(SessaoParaCriarRequestV1 sessaoRequestV1) {
-        this.validacoesSessao.forEach(v -> v.validarSessao(sessaoRequestV1));
 
         Sessao sessaoToCreate = SessaoMapperV1.sessaoParaCriarRequestV1ToSessao(
                 sessaoRequestV1
         );
+
+        Long idPauta = pautaRepository.findIdByAssunto
+                (sessaoToCreate.getPauta().getAssunto());
+        valida.validarSessaoInexistente(idPauta);
         Pauta pautaEncontrada = pautaRepository.findPautaByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
 
-        Pauta verificaPautaNaSessao = pautaRepository.findPautaByAssunto(sessaoRequestV1.getAssuntoPauta());
-        if(verificaPautaNaSessao.getSessao()!=null){
-            throw new BusinessException("Já existe uma sessão com esta pauta");
-        }
-
+        valida.validarSessaoRepetida(pautaEncontrada.getSessao());
         sessaoToCreate.setPauta(pautaEncontrada);
 
         return SessaoMapperV1.sessaoToSessaoCriadaResponseV1(
@@ -66,9 +54,13 @@ public class SessaoServiceImpl implements SessaoService {
         Sessao sessaoToCreate = SessaoMapperV1.sessaoParaVotarRequestV1ToSessao(
                 sessaoRequestV1
         );
-
+        Long idPauta = pautaRepository.findIdByAssunto
+                (sessaoToCreate.getPauta().getAssunto());
+        valida.validarSessaoInexistente(idPauta);
         Pauta pautaEncontrada = pautaRepository.findPautaByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
+
+
         Sessao sessaoEncontrada = sessaoRepository.findByPautaId
                 (pautaEncontrada.getId());
         Associado associadoEncontrado = associadoRepository.findAssociadoByCpf(
@@ -77,17 +69,16 @@ public class SessaoServiceImpl implements SessaoService {
                 associadoEncontrado.getId(),
                 sessaoEncontrada.getId());
 
-        if(associadoNaSessao != null){
-            throw new BusinessException("Associado já votou");
-        }
 
+        valida.validarSessaoJaVotada(associadoNaSessao);
+        valida.validarSessaoExpirada(sessaoEncontrada.getDuracao());
 
-        if(sessaoEncontrada.getDuracao().isBefore(LocalDateTime.now())){
-            throw new BusinessException("Sessão expirada");
-        }
 
         sessaoEncontrada.addAssociado(associadoEncontrado);
-        sessaoEncontrada.setVoto(sessaoToCreate.getVoto());
+        sessaoEncontrada.novoVoto(sessaoEncontrada,sessaoRequestV1);
+
+
+
         return SessaoMapperV1.sessaoToSessaoVotadaResponseV1(
                 sessaoRepository.save(sessaoEncontrada)
         );
@@ -95,13 +86,22 @@ public class SessaoServiceImpl implements SessaoService {
 
     @Override
     public SessaoTotalVotosResponseV1 totalDeVotosDaSessao(SessaoParaSaberTotalVotosRequestV1 sessaoRequestV1) {
+
+
         Sessao sessaoToCreate = SessaoMapperV1.sessaoParaSaberTotalVotosRequestV1ToSessao(
                 sessaoRequestV1
         );
-        Pauta pautaEncontrada = pautaRepository.findPautaByAssunto
+
+        Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
+        valida.validarSessaoInexistente(idPauta);
+
+        Pauta pautaEncontrada = pautaRepository.findPautaByAssunto
+                (sessaoRequestV1.getAssuntoPauta());
+
         Sessao sessaoEncontrada = sessaoRepository.findByPautaId
                 (pautaEncontrada.getId());
+
 
 
         return SessaoMapperV1.sessaoToSessaoTotalVotosResponseV1(

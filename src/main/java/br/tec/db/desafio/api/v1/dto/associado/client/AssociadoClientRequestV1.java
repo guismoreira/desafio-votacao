@@ -1,4 +1,4 @@
-package br.tec.db.desafio.api.v1.dto.sessao.response;
+package br.tec.db.desafio.api.v1.dto.associado.client;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SessaoTotalVotosResponseV1 {
-    private int totalVotosSim;
-    private int totalVotosNao;
+public class AssociadoClientRequestV1 {
+    private String cpf;
 }

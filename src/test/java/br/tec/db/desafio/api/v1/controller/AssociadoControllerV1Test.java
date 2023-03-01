@@ -1,7 +1,10 @@
 package br.tec.db.desafio.api.v1.controller;
 
+import br.tec.db.desafio.api.v1.dto.associado.AssociadoRequestV1;
+import br.tec.db.desafio.api.v1.dto.associado.AssociadoResponseV1;
 import br.tec.db.desafio.api.v1.dto.pauta.PautaRequestV1;
 import br.tec.db.desafio.api.v1.dto.pauta.PautaResponseV1;
+import br.tec.db.desafio.business.service.IAssociadoService;
 import br.tec.db.desafio.business.service.IPautaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,11 +23,12 @@ import static io.restassured.RestAssured.given;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PautaControllerV1Test {
+public class AssociadoControllerV1Test {
     @MockBean
-    IPautaService pautaService;
-    private static final String ASSUNTO = "tema da pauta";
-    private static final String URI ="/api/v1/pauta";
+    IAssociadoService associadoService;
+    private static final String NOME = "guilherme";
+    private static final String CPF = "12312366990";
+    private static final String URI ="/api/v1/associado";
     @LocalServerPort
     private int port;
 
@@ -35,18 +39,19 @@ public class PautaControllerV1Test {
 
     @Test
     void devePersistirPautaComSucesso() throws JsonProcessingException {
-        PautaRequestV1 pautaRequestV1 =
-                new PautaRequestV1(
-                        ASSUNTO);
+        AssociadoRequestV1 associadoRequestV1 =
+                new AssociadoRequestV1(
+                        NOME,
+                        CPF);
 
-        PautaResponseV1 pautaResponseV1 =
-                new PautaResponseV1(
-                        ASSUNTO
-                );
-        String request = new ObjectMapper().writeValueAsString(pautaRequestV1);
+        AssociadoResponseV1 associadoResponseV1 =
+                new AssociadoResponseV1(
+                        NOME,
+                        CPF);
+        String request = new ObjectMapper().writeValueAsString(associadoRequestV1);
 
-        Mockito.when(pautaService.criarUmaNovaPauta(pautaRequestV1))
-                .thenReturn(pautaResponseV1);
+        Mockito.when(associadoService.criarUmNovoAssociado(associadoRequestV1))
+                .thenReturn(associadoResponseV1);
 
         given()
                 .when()
