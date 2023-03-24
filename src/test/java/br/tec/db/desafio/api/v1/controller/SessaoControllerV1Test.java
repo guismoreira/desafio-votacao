@@ -12,25 +12,33 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.hibernate.annotations.SQLInsert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import static io.restassured.RestAssured.given;
 
 
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+@Sql("/insert.sql")
 public class SessaoControllerV1Test {
-    @MockBean
-    ISessaoService sessaoService;
-    private static final String CPF = "0123.0123.11.22-9";
-    private static final String ASSUNTO_PAUTA = "tema da pauta";
+
+    private static final String CPF = "01205411229";
+
+    private static final String ASSUNTO_PAUTA = "tema 1";
     private static final Long DURACAO_SESSAO = 2L;
     private static final String URI ="/api/v1/sessao";
 
@@ -48,14 +56,9 @@ public class SessaoControllerV1Test {
                 new SessaoParaCriarRequestV1(
                         ASSUNTO_PAUTA,
                         DURACAO_SESSAO);
-        SessaoCriadaResponseV1 sessaoCriadaResponseV1 =
-                new SessaoCriadaResponseV1(
-                        ASSUNTO_PAUTA
-                );
+
         String request = new ObjectMapper().writeValueAsString(sessaoParaCriarRequestV1);
 
-        Mockito.when(sessaoService.criarUmaNovaSessao(sessaoParaCriarRequestV1))
-                .thenReturn(sessaoCriadaResponseV1);
 
         given()
                 .when()
@@ -64,8 +67,6 @@ public class SessaoControllerV1Test {
                 .post(URI)
                 .then()
                 .statusCode(201);
-
-
     }
 
     @Test
@@ -75,14 +76,8 @@ public class SessaoControllerV1Test {
                         Voto.SIM,
                         CPF,
                         ASSUNTO_PAUTA);
-        SessaoVotadaResponseV1 sessaoVotadaResponseV1 =
-                new SessaoVotadaResponseV1(
-                        Voto.SIM
-                );
-        String request = new ObjectMapper().writeValueAsString(sessaoParaVotarRequestV1);
 
-        Mockito.when(sessaoService.votarEmUmaSessao(sessaoParaVotarRequestV1))
-                .thenReturn(sessaoVotadaResponseV1);
+        String request = new ObjectMapper().writeValueAsString(sessaoParaVotarRequestV1);
 
         given()
                 .when()
@@ -91,8 +86,6 @@ public class SessaoControllerV1Test {
                 .post(URI.concat("/votar"))
                 .then()
                 .statusCode(200);
-
-
     }
 
     @Test
@@ -108,9 +101,6 @@ public class SessaoControllerV1Test {
                 );
         String request = new ObjectMapper().writeValueAsString(sessaoParaSaberTotalVotosRequestV1);
 
-        Mockito.when(sessaoService.totalDeVotosDaSessao(sessaoParaSaberTotalVotosRequestV1))
-                .thenReturn(sessaoTotalVotosResponseV1);
-
         given()
                 .when()
                 .contentType(ContentType.JSON)
@@ -118,8 +108,6 @@ public class SessaoControllerV1Test {
                 .get(URI)
                 .then()
                 .statusCode(200);
-
-
     }
 
 }

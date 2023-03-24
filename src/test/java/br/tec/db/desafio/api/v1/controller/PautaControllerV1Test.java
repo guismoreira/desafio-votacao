@@ -9,20 +9,15 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import static io.restassured.RestAssured.given;
 
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 public class PautaControllerV1Test {
-    @MockBean
-    IPautaService pautaService;
     private static final String ASSUNTO = "tema da pauta";
     private static final String URI ="/api/v1/pauta";
     @LocalServerPort
@@ -39,14 +34,8 @@ public class PautaControllerV1Test {
                 new PautaRequestV1(
                         ASSUNTO);
 
-        PautaResponseV1 pautaResponseV1 =
-                new PautaResponseV1(
-                        ASSUNTO
-                );
         String request = new ObjectMapper().writeValueAsString(pautaRequestV1);
 
-        Mockito.when(pautaService.criarUmaNovaPauta(pautaRequestV1))
-                .thenReturn(pautaResponseV1);
 
         given()
                 .when()
