@@ -20,7 +20,6 @@ import static io.restassured.RestAssured.given;
 public class AssociadoControllerV1Test {
     private static final String NOME = "guilherme";
     private static final String CPF = "12312366990";
-    private static final StatusCpf STATUS_CPF = StatusCpf.ABLE_TO_VOTE;
     private static final String URI ="/api/v1/associado";
     @LocalServerPort
     private int port;
