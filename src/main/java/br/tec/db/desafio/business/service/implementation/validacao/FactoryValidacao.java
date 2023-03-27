@@ -17,6 +17,7 @@ import br.tec.db.desafio.business.service.implementation.validacao.sessao.votar.
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 public class FactoryValidacao {
@@ -66,9 +67,9 @@ public class FactoryValidacao {
         validarSessaoExpirada.validar(localDateTime);
     }
 
-    public void validarSessaoJaVotada(Long id){
+    public void validarSessaoJaVotada(Sessao sessao){
         ValidarSessaoJaVotada validarSessaoJaVotada = new ValidarSessaoJaVotada();
-        validarSessaoJaVotada.validar(id);
+        validarSessaoJaVotada.validar(sessao);
     }
 
     public void validarSessaoResultado(Sessao sessao) {

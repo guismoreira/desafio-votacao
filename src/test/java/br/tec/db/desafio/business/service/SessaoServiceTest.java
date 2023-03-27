@@ -6,7 +6,6 @@ import br.tec.db.desafio.api.v1.dto.sessao.response.SessaoCriadaResponseV1;
 import br.tec.db.desafio.business.domain.Sessao;
 import br.tec.db.desafio.business.service.implementation.SessaoService;
 import br.tec.db.desafio.repository.AssociadoRepository;
-import br.tec.db.desafio.repository.AssociadoSessaoRepository;
 import br.tec.db.desafio.repository.PautaRepository;
 import br.tec.db.desafio.repository.SessaoRepository;
 import org.junit.jupiter.api.Test;
@@ -28,8 +27,7 @@ public class SessaoServiceTest {
     SessaoRepository sessaoRepository;
     @Mock
     AssociadoRepository associadoRepository;
-    @Mock
-    AssociadoSessaoRepository associadoSessaoRepository;
+
 
     private static final String ASSUNTO_PAUTA = "tema da pauta";
     private static final Long DURACAO_SESSAO = 2L;
@@ -37,7 +35,7 @@ public class SessaoServiceTest {
 
     @Test
     void devePersistirSessaoComSucesso() {
-        SessaoService sessaoServiceImpl = new SessaoService(sessaoRepository,pautaRepository, associadoRepository,associadoSessaoRepository
+        SessaoService sessaoServiceImpl = new SessaoService(sessaoRepository,pautaRepository, associadoRepository
         );
 
         SessaoParaCriarRequestV1 shouldSessaoRequestV1 =

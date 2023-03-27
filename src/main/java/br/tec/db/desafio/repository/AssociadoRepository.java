@@ -14,4 +14,6 @@ public interface AssociadoRepository extends JpaRepository<Associado, Long> {
 
     Associado findAssociadoByCpf(@Param("cpf") String cpf);
 
+
+    List<Associado> findAssociadosBySessoesId(Long sessoesId);
 }
