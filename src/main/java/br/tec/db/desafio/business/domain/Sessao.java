@@ -23,7 +23,13 @@ public class Sessao {
     @JoinColumn(name = "pauta_id", referencedColumnName = "id")
     private Pauta pauta;
     private Voto voto;
-    @ManyToMany(mappedBy = "sessoes")
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            },
+            mappedBy = "sessoes")
     private List<Associado> associados;
 
     public void addAssociado(Associado associado) {

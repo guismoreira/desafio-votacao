@@ -13,7 +13,6 @@ import br.tec.db.desafio.business.domain.Sessao;
 import br.tec.db.desafio.business.service.ISessaoService;
 import br.tec.db.desafio.business.service.implementation.base.BaseSessao;
 import br.tec.db.desafio.repository.AssociadoRepository;
-import br.tec.db.desafio.repository.AssociadoSessaoRepository;
 import br.tec.db.desafio.repository.PautaRepository;
 import br.tec.db.desafio.repository.SessaoRepository;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,8 @@ import java.util.List;
 public class SessaoService extends BaseSessao implements ISessaoService {
 
 
-    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository, AssociadoSessaoRepository associadoSessaoRepository) {
-        super(sessaoRepository, pautaRepository, associadoRepository, associadoSessaoRepository);
+    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository) {
+        super(sessaoRepository, pautaRepository, associadoRepository);
     }
 
     @Override
@@ -65,12 +64,14 @@ public class SessaoService extends BaseSessao implements ISessaoService {
                 (pautaEncontrada.getId());
         Associado associadoEncontrado = associadoRepository.findAssociadoByCpf(
                 sessaoRequestV1.getCpf());
-        Long associadoNaSessao = associadoSessaoRepository.findByAssociadoIdAndSessaoId(
+
+        Sessao associadoNaSessaoPorSessao = sessaoRepository.findSessoesByAssociadosIdAndPautaAssunto(
                 associadoEncontrado.getId(),
-                sessaoEncontrada.getId());
+                sessaoEncontrada.getPauta().getAssunto());
 
 
-        valida.validarSessaoJaVotada(associadoNaSessao);
+
+        valida.validarSessaoJaVotada(associadoNaSessaoPorSessao);
         valida.validarSessaoExpirada(sessaoEncontrada.getDuracao());
 
 

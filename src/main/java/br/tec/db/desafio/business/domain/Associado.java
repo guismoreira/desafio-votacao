@@ -21,8 +21,14 @@ public class Associado {
     @Column(nullable = false)
     private Long id;
 
-    @ManyToMany
-    @JoinColumn(name = "sessao_id", referencedColumnName = "id")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "associado_sessao",
+            joinColumns = { @JoinColumn(name = "associado_id") },
+            inverseJoinColumns = { @JoinColumn(name = "sessao_id") })
     private List<Sessao> sessoes;
 
     public void addSessao(Sessao sessao) {
