@@ -11,21 +11,30 @@ import br.tec.db.desafio.business.domain.Associado;
 import br.tec.db.desafio.business.domain.Pauta;
 import br.tec.db.desafio.business.domain.Sessao;
 import br.tec.db.desafio.business.service.ISessaoService;
-import br.tec.db.desafio.business.service.implementation.base.BaseSessao;
+import br.tec.db.desafio.business.service.implementation.validacao.FactoryValidacao;
 import br.tec.db.desafio.repository.AssociadoRepository;
 import br.tec.db.desafio.repository.PautaRepository;
 import br.tec.db.desafio.repository.SessaoRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class SessaoService extends BaseSessao implements ISessaoService {
+public class SessaoService implements ISessaoService {
+
+    private final SessaoRepository sessaoRepository;
+    private final PautaRepository pautaRepository;
+    private final AssociadoRepository associadoRepository;
+    private final ModelMapper modelMapper;
+    private static final FactoryValidacao valida = new FactoryValidacao();
 
 
-    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository) {
-        super(sessaoRepository, pautaRepository, associadoRepository);
+    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository, ModelMapper modelMapper) {
+        this.sessaoRepository = sessaoRepository;
+        this.pautaRepository = pautaRepository;
+        this.associadoRepository = associadoRepository;
+        this.modelMapper = modelMapper;
     }
+
 
     @Override
     public SessaoCriadaResponseV1 criarUmaNovaSessao(SessaoParaCriarRequestV1 sessaoRequestV1) {

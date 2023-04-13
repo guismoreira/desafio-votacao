@@ -5,18 +5,19 @@ import br.tec.db.desafio.api.v1.dto.pauta.PautaRequestV1;
 import br.tec.db.desafio.api.v1.dto.pauta.PautaResponseV1;
 import br.tec.db.desafio.business.domain.Pauta;
 import br.tec.db.desafio.business.service.IPautaService;
-import br.tec.db.desafio.business.service.implementation.base.BasePauta;
+import br.tec.db.desafio.business.service.implementation.validacao.FactoryValidacao;
 import br.tec.db.desafio.repository.PautaRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class PautaService extends BasePauta implements IPautaService {
-
-
-    public PautaService(PautaRepository pautaRepository) {
-        super(pautaRepository);
+public class PautaService implements IPautaService {
+    private final PautaRepository pautaRepository;
+    private static final FactoryValidacao valida = new FactoryValidacao();
+    private final ModelMapper modelMapper;
+    public PautaService(PautaRepository pautaRepository, ModelMapper modelMapper) {
+        this.pautaRepository = pautaRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
