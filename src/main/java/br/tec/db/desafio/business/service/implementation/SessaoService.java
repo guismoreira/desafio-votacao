@@ -39,9 +39,7 @@ public class SessaoService implements ISessaoService {
     @Override
     public SessaoCriadaResponseV1 criarUmaNovaSessao(SessaoParaCriarRequestV1 sessaoRequestV1) {
 
-        Sessao sessaoToCreate = SessaoMapperV1.sessaoParaCriarRequestV1ToSessao(
-                sessaoRequestV1
-        );
+        Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
 
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
@@ -52,16 +50,12 @@ public class SessaoService implements ISessaoService {
         valida.validarSessaoRepetida(pautaEncontrada.getSessao());
         sessaoToCreate.setPauta(pautaEncontrada);
 
-        return SessaoMapperV1.sessaoToSessaoCriadaResponseV1(
-                sessaoRepository.save(sessaoToCreate)
-        );
+        return modelMapper.map(sessaoToCreate, SessaoCriadaResponseV1.class);
     }
 
     @Override
     public SessaoVotadaResponseV1 votarEmUmaSessao(SessaoParaVotarRequestV1 sessaoRequestV1) {
-        Sessao sessaoToCreate = SessaoMapperV1.sessaoParaVotarRequestV1ToSessao(
-                sessaoRequestV1
-        );
+        Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
         valida.validarSessaoInexistente(idPauta);
@@ -89,18 +83,16 @@ public class SessaoService implements ISessaoService {
 
 
 
-        return SessaoMapperV1.sessaoToSessaoVotadaResponseV1(
-                sessaoRepository.save(sessaoEncontrada)
-        );
+        return modelMapper.map(sessaoEncontrada, SessaoVotadaResponseV1.class);
+
     }
 
     @Override
     public SessaoTotalVotosResponseV1 totalDeVotosDaSessao(SessaoParaSaberTotalVotosRequestV1 sessaoRequestV1) {
 
 
-        Sessao sessaoToCreate = SessaoMapperV1.sessaoParaSaberTotalVotosRequestV1ToSessao(
-                sessaoRequestV1
-        );
+        Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
+
 
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
@@ -114,9 +106,8 @@ public class SessaoService implements ISessaoService {
         valida.validarSessaoResultado(sessaoEncontrada);
 
 
-        return SessaoMapperV1.sessaoToSessaoTotalVotosResponseV1(
-                sessaoEncontrada
-        );
+        return modelMapper.map(sessaoEncontrada, SessaoTotalVotosResponseV1.class);
+
     }
 
 

@@ -23,15 +23,11 @@ public class PautaService implements IPautaService {
     @Override
     public PautaResponseV1 criarUmaNovaPauta(PautaRequestV1 pautaRequestV1) {
 
-        Pauta pautaToCreate = PautaMapperV1.pautaRequestV1ToPauta(
-                pautaRequestV1
-        );
+        Pauta pautaToCreate = modelMapper.map(pautaRequestV1, Pauta.class);
         Pauta verificaPauta = pautaRepository.findPautaByAssunto(pautaRequestV1.getAssunto());
         valida.validarJaExistente(verificaPauta);
 
-        return PautaMapperV1.pautaToPautaResponseV1(
-                pautaRepository.save(pautaToCreate)
-        );
+        return modelMapper.map(pautaToCreate, PautaResponseV1.class);
     }
 
 
