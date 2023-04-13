@@ -1,6 +1,6 @@
 package br.tec.db.desafio.business.service.implementation;
 
-import br.tec.db.desafio.api.v1.dto.sessao.SessaoMapperV1;
+
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaCriarRequestV1;
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaSaberTotalVotosRequestV1;
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaVotarRequestV1;
