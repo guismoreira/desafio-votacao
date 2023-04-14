@@ -2,6 +2,7 @@ package br.tec.db.desafio.business.service;
 
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaCriarRequestV1;
 import br.tec.db.desafio.api.v1.dto.sessao.response.SessaoCriadaResponseV1;
+import br.tec.db.desafio.business.domain.Pauta;
 import br.tec.db.desafio.business.domain.Sessao;
 import br.tec.db.desafio.business.service.implementation.SessaoService;
 import br.tec.db.desafio.repository.AssociadoRepository;
@@ -44,17 +45,15 @@ public class SessaoServiceTest {
                         ASSUNTO_PAUTA,
                         2L);
 
-        Sessao shouldSessaoRequestV1ToSessao=modelMapper.map(shouldSessaoRequestV1,Sessao.class);
-
-
-        when(pautaRepository.findPautaByAssunto(ASSUNTO_PAUTA)
-        ).thenReturn(shouldSessaoRequestV1ToSessao.getPauta());
-
-
         SessaoParaCriarRequestV1 sessaoRequestV1 = new SessaoParaCriarRequestV1(
                 ASSUNTO_PAUTA,
                 DURACAO_SESSAO);
         Sessao sessaoRequestV1ToPauta =modelMapper.map(sessaoRequestV1,Sessao.class);
+
+        sessaoRequestV1ToPauta.setPauta(new Pauta(""));
+
+        when(pautaRepository.findPautaByAssunto(ASSUNTO_PAUTA)
+        ).thenReturn(sessaoRequestV1ToPauta.getPauta());
 
         SessaoCriadaResponseV1 actual = sessaoServiceImpl.criarUmaNovaSessao(sessaoRequestV1);
 
