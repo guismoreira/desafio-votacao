@@ -28,6 +28,7 @@ public class AssociadoService implements IAssociadoService {
         Associado associadoToCreate = modelMapper.map(associadoRequestV1, Associado.class);
         Associado verificaAssociado = associadoRepository.findAssociadoByCpf(associadoToCreate.getCpf());
         valida.validarNaoPodeSerNulo(verificaAssociado);
+        associadoRepository.save(associadoToCreate);
         return modelMapper.map(associadoToCreate, AssociadoResponseV1.class);
 
 

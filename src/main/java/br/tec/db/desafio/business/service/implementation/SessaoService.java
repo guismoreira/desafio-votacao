@@ -49,6 +49,7 @@ public class SessaoService implements ISessaoService {
 
         valida.validarSessaoRepetida(pautaEncontrada.getSessao());
         sessaoToCreate.setPauta(pautaEncontrada);
+        sessaoRepository.save(sessaoToCreate);
 
         return modelMapper.map(sessaoToCreate, SessaoCriadaResponseV1.class);
     }

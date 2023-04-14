@@ -26,6 +26,7 @@ public class PautaService implements IPautaService {
         Pauta pautaToCreate = modelMapper.map(pautaRequestV1, Pauta.class);
         Pauta verificaPauta = pautaRepository.findPautaByAssunto(pautaRequestV1.getAssunto());
         valida.validarJaExistente(verificaPauta);
+        pautaRepository.save(pautaToCreate);
 
         return modelMapper.map(pautaToCreate, PautaResponseV1.class);
     }
