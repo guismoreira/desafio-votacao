@@ -39,7 +39,7 @@ public class SessaoControllerV1 {
     })
     public ResponseEntity<SessaoCriadaResponseV1> criarUmaNovaSessao(
             @NotEmpty(message = "A sessão é obrigatória e deve ser preenchida")
-            @RequestBody @Valid SessaoParaCriarRequestV1 sessaoRequestV1) {
+            @RequestBody SessaoParaCriarRequestV1 sessaoRequestV1) {
             SessaoCriadaResponseV1 sessaoResponseV1 = sessaoService.criarUmaNovaSessao(sessaoRequestV1);
         return new ResponseEntity<>(sessaoResponseV1, HttpStatus.CREATED);
 }
@@ -54,7 +54,7 @@ public class SessaoControllerV1 {
     })
     public ResponseEntity<SessaoVotadaResponseV1> votarEmUmaSessao(
             @NotEmpty(message = "Dado de votação é obrigatório e deve ser preenchido")
-            @RequestBody @Valid SessaoParaVotarRequestV1 sessaoRequestV1) {
+            @RequestBody SessaoParaVotarRequestV1 sessaoRequestV1) {
         SessaoVotadaResponseV1 sessaoVotadaResponseV1 = sessaoService.votarEmUmaSessao(sessaoRequestV1);
         return new ResponseEntity<>(sessaoVotadaResponseV1, HttpStatus.OK);
     }
@@ -69,7 +69,7 @@ public class SessaoControllerV1 {
     })
     public ResponseEntity<SessaoTotalVotosResponseV1> totalDeVotosDaSessao(
             @NotEmpty(message = "Total de votos da votação é obrigatório e deve ser preenchido")
-            @RequestBody @Valid SessaoParaSaberTotalVotosRequestV1 sessaoRequestV1) {
+            @RequestBody SessaoParaSaberTotalVotosRequestV1 sessaoRequestV1) {
         SessaoTotalVotosResponseV1 sessaoTotalVotosResponseV1 = sessaoService.totalDeVotosDaSessao(sessaoRequestV1);
         return new ResponseEntity<>(sessaoTotalVotosResponseV1, HttpStatus.OK);
     }

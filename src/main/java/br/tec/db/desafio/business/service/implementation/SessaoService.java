@@ -1,6 +1,6 @@
 package br.tec.db.desafio.business.service.implementation;
 
-import br.tec.db.desafio.api.v1.dto.sessao.SessaoMapperV1;
+
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaCriarRequestV1;
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaSaberTotalVotosRequestV1;
 import br.tec.db.desafio.api.v1.dto.sessao.request.SessaoParaVotarRequestV1;
@@ -11,28 +11,39 @@ import br.tec.db.desafio.business.domain.Associado;
 import br.tec.db.desafio.business.domain.Pauta;
 import br.tec.db.desafio.business.domain.Sessao;
 import br.tec.db.desafio.business.service.ISessaoService;
-import br.tec.db.desafio.business.service.implementation.base.BaseSessao;
+import br.tec.db.desafio.business.service.implementation.validacao.FactoryValidacao;
 import br.tec.db.desafio.repository.AssociadoRepository;
 import br.tec.db.desafio.repository.PautaRepository;
 import br.tec.db.desafio.repository.SessaoRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
-public class SessaoService extends BaseSessao implements ISessaoService {
+public class SessaoService implements ISessaoService {
+
+    private final SessaoRepository sessaoRepository;
+    private final PautaRepository pautaRepository;
+    private final AssociadoRepository associadoRepository;
+    private final ModelMapper modelMapper;
+    private static final FactoryValidacao valida = new FactoryValidacao();
 
 
-    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository) {
-        super(sessaoRepository, pautaRepository, associadoRepository);
+    public SessaoService(SessaoRepository sessaoRepository, PautaRepository pautaRepository, AssociadoRepository associadoRepository, ModelMapper modelMapper) {
+        this.sessaoRepository = sessaoRepository;
+        this.pautaRepository = pautaRepository;
+        this.associadoRepository = associadoRepository;
+        this.modelMapper = modelMapper;
     }
+
 
     @Override
     public SessaoCriadaResponseV1 criarUmaNovaSessao(SessaoParaCriarRequestV1 sessaoRequestV1) {
 
-        Sessao sessaoToCreate = SessaoMapperV1.sessaoParaCriarRequestV1ToSessao(
-                sessaoRequestV1
-        );
+        Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
+        sessaoToCreate.setDuracao(LocalDateTime.now().plusMinutes(sessaoRequestV1.getDuracaoSessaoEmMinuto()));
+
 
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
@@ -42,17 +53,14 @@ public class SessaoService extends BaseSessao implements ISessaoService {
 
         valida.validarSessaoRepetida(pautaEncontrada.getSessao());
         sessaoToCreate.setPauta(pautaEncontrada);
+        sessaoRepository.save(sessaoToCreate);
 
-        return SessaoMapperV1.sessaoToSessaoCriadaResponseV1(
-                sessaoRepository.save(sessaoToCreate)
-        );
+        return modelMapper.map(sessaoToCreate, SessaoCriadaResponseV1.class);
     }
 
     @Override
     public SessaoVotadaResponseV1 votarEmUmaSessao(SessaoParaVotarRequestV1 sessaoRequestV1) {
-        Sessao sessaoToCreate = SessaoMapperV1.sessaoParaVotarRequestV1ToSessao(
-                sessaoRequestV1
-        );
+        Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
         valida.validarSessaoInexistente(idPauta);
@@ -69,29 +77,23 @@ public class SessaoService extends BaseSessao implements ISessaoService {
                 associadoEncontrado.getId(),
                 sessaoEncontrada.getPauta().getAssunto());
 
-
-
         valida.validarSessaoJaVotada(associadoNaSessaoPorSessao);
         valida.validarSessaoExpirada(sessaoEncontrada.getDuracao());
 
-
         sessaoEncontrada.addAssociado(associadoEncontrado);
         sessaoEncontrada.novoVoto(sessaoEncontrada,sessaoRequestV1);
+        sessaoRepository.save(sessaoEncontrada);
 
+        return modelMapper.map(sessaoEncontrada, SessaoVotadaResponseV1.class);
 
-
-        return SessaoMapperV1.sessaoToSessaoVotadaResponseV1(
-                sessaoRepository.save(sessaoEncontrada)
-        );
     }
 
     @Override
     public SessaoTotalVotosResponseV1 totalDeVotosDaSessao(SessaoParaSaberTotalVotosRequestV1 sessaoRequestV1) {
 
 
-        Sessao sessaoToCreate = SessaoMapperV1.sessaoParaSaberTotalVotosRequestV1ToSessao(
-                sessaoRequestV1
-        );
+        Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
+
 
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
@@ -105,9 +107,8 @@ public class SessaoService extends BaseSessao implements ISessaoService {
         valida.validarSessaoResultado(sessaoEncontrada);
 
 
-        return SessaoMapperV1.sessaoToSessaoTotalVotosResponseV1(
-                sessaoEncontrada
-        );
+        return modelMapper.map(sessaoEncontrada, SessaoTotalVotosResponseV1.class);
+
     }
 
 

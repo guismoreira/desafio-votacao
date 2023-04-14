@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
@@ -32,13 +33,15 @@ import static io.restassured.RestAssured.given;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @Sql("/insert.sql")
 public class SessaoControllerV1Test {
 
     private static final String CPF = "01205411229";
 
-    private static final String ASSUNTO_PAUTA = "tema 1";
+    private static final String ASSUNTO_PAUTA_1 = "tema 1";
+    private static final String ASSUNTO_PAUTA_2 = "tema 2";
     private static final Long DURACAO_SESSAO = 2L;
     private static final String URI ="/api/v1/sessao";
 
@@ -54,7 +57,7 @@ public class SessaoControllerV1Test {
     void devePersistirSessaoComSucesso() throws JsonProcessingException {
         SessaoParaCriarRequestV1 sessaoParaCriarRequestV1 =
                 new SessaoParaCriarRequestV1(
-                        ASSUNTO_PAUTA,
+                        ASSUNTO_PAUTA_1,
                         DURACAO_SESSAO);
 
         String request = new ObjectMapper().writeValueAsString(sessaoParaCriarRequestV1);
@@ -75,7 +78,7 @@ public class SessaoControllerV1Test {
                 new SessaoParaVotarRequestV1(
                         Voto.SIM,
                         CPF,
-                        ASSUNTO_PAUTA);
+                        ASSUNTO_PAUTA_2);
 
         String request = new ObjectMapper().writeValueAsString(sessaoParaVotarRequestV1);
 
@@ -92,7 +95,7 @@ public class SessaoControllerV1Test {
     void deveSaberTotalDeVotosDeUmaSessaoComSucesso() throws JsonProcessingException {
         SessaoParaSaberTotalVotosRequestV1 sessaoParaSaberTotalVotosRequestV1 =
                 new SessaoParaSaberTotalVotosRequestV1(
-                        ASSUNTO_PAUTA);
+                        ASSUNTO_PAUTA_2);
         SessaoTotalVotosResponseV1 sessaoTotalVotosResponseV1 =
                 new SessaoTotalVotosResponseV1(
                         30,

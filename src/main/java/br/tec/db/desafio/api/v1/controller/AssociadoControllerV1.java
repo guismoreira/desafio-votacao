@@ -40,7 +40,7 @@ public class AssociadoControllerV1 {
     })
     public ResponseEntity<AssociadoResponseV1> cadastraAssociado(
             @NotEmpty(message = "O associado é obrigatório e deve ser preenchido")
-            @RequestBody @Valid AssociadoRequestV1 associadoRequestV1) {
+            @RequestBody AssociadoRequestV1 associadoRequestV1) {
             AssociadoResponseV1 associadoResponseV1 = associadoService.criarUmNovoAssociado(associadoRequestV1);
         return new ResponseEntity<>(associadoResponseV1, HttpStatus.CREATED);
     }
@@ -56,7 +56,7 @@ public class AssociadoControllerV1 {
     })
     public ResponseEntity<AssociadoClientResponseV1> getStatusCpfAssociado(
             @NotEmpty(message = "O associado é obrigatório e deve ser preenchido")
-            @RequestBody @Valid AssociadoClientRequestV1 associadoClientRequestV1
+            @RequestBody AssociadoClientRequestV1 associadoClientRequestV1
          ) {
             AssociadoClientResponseV1 associadoClientResponseV1 = associadoStatusCpfClient.getStatusCpfAssociado(associadoClientRequestV1);
         return new ResponseEntity<>(associadoClientResponseV1, HttpStatus.OK);

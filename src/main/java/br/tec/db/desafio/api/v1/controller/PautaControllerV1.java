@@ -37,7 +37,7 @@ public class PautaControllerV1 {
     })
     public ResponseEntity<PautaResponseV1> cadastraPauta(
             @NotEmpty(message = "A pauta é obrigatória e deve ser preenchida")
-            @RequestBody @Valid PautaRequestV1 pautaRequestV1) {
+            @RequestBody PautaRequestV1 pautaRequestV1) {
             PautaResponseV1 pautaResponseV1 = pautaService.criarUmaNovaPauta(pautaRequestV1);
         return new ResponseEntity<>(pautaResponseV1, HttpStatus.CREATED);
 }
