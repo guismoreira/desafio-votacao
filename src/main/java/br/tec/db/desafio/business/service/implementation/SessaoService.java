@@ -18,6 +18,8 @@ import br.tec.db.desafio.repository.SessaoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class SessaoService implements ISessaoService {
 
@@ -40,6 +42,8 @@ public class SessaoService implements ISessaoService {
     public SessaoCriadaResponseV1 criarUmaNovaSessao(SessaoParaCriarRequestV1 sessaoRequestV1) {
 
         Sessao sessaoToCreate = modelMapper.map(sessaoRequestV1, Sessao.class);
+        sessaoToCreate.setDuracao(LocalDateTime.now().plusMinutes(sessaoRequestV1.getDuracaoSessaoEmMinuto()));
+
 
         Long idPauta = pautaRepository.findIdByAssunto
                 (sessaoToCreate.getPauta().getAssunto());
@@ -73,16 +77,12 @@ public class SessaoService implements ISessaoService {
                 associadoEncontrado.getId(),
                 sessaoEncontrada.getPauta().getAssunto());
 
-
-
         valida.validarSessaoJaVotada(associadoNaSessaoPorSessao);
         valida.validarSessaoExpirada(sessaoEncontrada.getDuracao());
 
-
         sessaoEncontrada.addAssociado(associadoEncontrado);
         sessaoEncontrada.novoVoto(sessaoEncontrada,sessaoRequestV1);
-
-
+        sessaoRepository.save(sessaoEncontrada);
 
         return modelMapper.map(sessaoEncontrada, SessaoVotadaResponseV1.class);
 

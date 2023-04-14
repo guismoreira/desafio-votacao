@@ -10,7 +10,7 @@ public class ValidarSessaoRepetida {
 
     public void validar(Sessao dado) {
 
-        if(dado.getPauta()!=null){
+        if(dado!=null){
             throw new BusinessException("Já existe uma sessao com este tema");
         }
 
