@@ -32,7 +32,7 @@ public class SessaoControllerV1 {
     @PostMapping
     @Operation(summary = "Cadastro de sessão")
     @ApiResponses({
-            @ApiResponse(responseCode  = "200", description  = "Ok"),
+            @ApiResponse(responseCode  = "201", description  = "Created"),
             @ApiResponse(responseCode = "400", description = "Dados do payload inválidos."),
             @ApiResponse(responseCode = "422", description = "Dado não encontrado"),
             @ApiResponse(responseCode = "500", description = "Ocorreu um erro inesperado no servidor. Por favor, tente novamente mais tarde.")
