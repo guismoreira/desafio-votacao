@@ -5,8 +5,10 @@ import br.tec.db.desafio.api.v1.dto.associado.client.AssociadoClientRequestV1;
 import br.tec.db.desafio.business.domain.enums.StatusCpf;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,66 +17,78 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class AssociadoControllerV1Test {
-    private static final String NOME = "guilherme";
-    private static final String CPF = "12312366990";
-    private static final String URI ="/api/v1/associado";
     @LocalServerPort
     private int port;
+    private static final String NOME = "guilherme";
+    private static final String CPF = "12312366990";
+    private static final String BASE_URI = "http://localhost";
+    private static final String BASE_PATH ="/api/v1/associado";
+
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI=BASE_URI;
+        RestAssured.basePath =BASE_PATH;
+    }
 
     @BeforeEach
-    void setup() {
-        RestAssured.port = this.port;
+    public void init() {
+        RestAssured.port = port;
     }
 
     @Test
-    void devePersistirAssociadoComSucesso() throws JsonProcessingException {
+    void devePersistirAssociadoComSucesso() {
         AssociadoRequestV1 associadoRequestV1 =
                 new AssociadoRequestV1(
                         CPF,
                         NOME
                         );
 
+        Gson gson = new Gson();
 
-        String request = new ObjectMapper().writeValueAsString(associadoRequestV1);
-
-
+        String request = gson.toJson(associadoRequestV1);
 
         given()
-                .when()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .post(URI)
-                .then()
-                .statusCode(201);
-
+            .accept(ContentType.JSON)
+            .body(request)
+        .when()
+            .contentType(ContentType.JSON)
+            .post()
+        .then()
+            .assertThat()
+            .statusCode(201)
+            .contentType(ContentType.JSON)
+            .assertThat()
+            .body("cpf", notNullValue());
 
     }
 
     @Test
     void deveConsultarCpfAssociadoComSucesso() throws JsonProcessingException {
-        AssociadoClientRequestV1 associadoRequestV1 =
+        AssociadoClientRequestV1 associadoClientRequestV1 =
                 new AssociadoClientRequestV1(
                         CPF);
 
+        Gson gson = new Gson();
 
-        String request = new ObjectMapper().writeValueAsString(associadoRequestV1);
-
-
-
+        String request = gson.toJson(associadoClientRequestV1);
         given()
-                .when()
-                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
                 .body(request)
-                .post(URI.concat("/statuscpf"))
-                .then()
-                .statusCode(200);
-
-
+        .when()
+                .contentType(ContentType.JSON)
+                .post("statuscpf")
+        .then()
+                .assertThat()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .assertThat()
+                .body("statusCpf", notNullValue());
     }
 
 }

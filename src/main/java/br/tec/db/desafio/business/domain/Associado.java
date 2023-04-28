@@ -1,5 +1,6 @@
 package br.tec.db.desafio.business.domain;
 
+import br.tec.db.desafio.business.domain.enums.StatusCpf;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

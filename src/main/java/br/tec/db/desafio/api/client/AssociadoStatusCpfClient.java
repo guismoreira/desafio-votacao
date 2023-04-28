@@ -1,8 +1,10 @@
 package br.tec.db.desafio.api.client;
 
 
+import br.tec.db.desafio.api.v1.dto.associado.client.AssociadoClient;
 import br.tec.db.desafio.api.v1.dto.associado.client.AssociadoClientRequestV1;
 import br.tec.db.desafio.api.v1.dto.associado.client.AssociadoClientResponseV1;
+import br.tec.db.desafio.business.domain.Associado;
 import br.tec.db.desafio.business.domain.enums.StatusCpf;
 
 import br.tec.db.desafio.business.service.implementation.validacao.FactoryValidacao;
@@ -16,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Component
 public class AssociadoStatusCpfClient {
 
-
     private static final FactoryValidacao valida = new FactoryValidacao();
-
     private final ModelMapper modelMapper;
 
     public AssociadoStatusCpfClient(ModelMapper modelMapper) {
@@ -31,7 +31,11 @@ public class AssociadoStatusCpfClient {
             ) {
         valida.validarCpf(associadoClientRequestV1);
 
-        return modelMapper.map(StatusCpf.randomStatusCpf(), AssociadoClientResponseV1.class);
+        AssociadoClient associadoClient = new AssociadoClient(
+                associadoClientRequestV1.getCpf(),
+                StatusCpf.randomStatusCpf());
+
+        return modelMapper.map(associadoClient, AssociadoClientResponseV1.class);
     }
 
 

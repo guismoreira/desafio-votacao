@@ -5,8 +5,10 @@ import br.tec.db.desafio.api.v1.dto.pauta.PautaResponseV1;
 import br.tec.db.desafio.business.service.IPautaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,19 +17,27 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class PautaControllerV1Test {
     private static final String ASSUNTO = "tema da pauta";
-    private static final String URI ="/api/v1/pauta";
+    private static final String BASE_URI = "http://localhost";
+    private static final String BASE_PATH ="/api/v1/pauta";
     @LocalServerPort
     private int port;
 
+    @BeforeAll
+    public static void setup() {
+        RestAssured.baseURI=BASE_URI;
+        RestAssured.basePath =BASE_PATH;
+    }
+
     @BeforeEach
-    void setup() {
-        RestAssured.port = this.port;
+    public void init() {
+        RestAssured.port = port;
     }
 
     @Test
@@ -36,16 +46,22 @@ public class PautaControllerV1Test {
                 new PautaRequestV1(
                         ASSUNTO);
 
-        String request = new ObjectMapper().writeValueAsString(pautaRequestV1);
+        Gson gson = new Gson();
 
+        String request = gson.toJson(pautaRequestV1);
 
         given()
-                .when()
-                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
                 .body(request)
-                .post(URI)
-                .then()
-                .statusCode(201);
+        .when()
+                .contentType(ContentType.JSON)
+                .post()
+        .then()
+                .assertThat()
+                .statusCode(201)
+                .contentType(ContentType.JSON)
+                .assertThat()
+                .body("assunto", notNullValue());
 
 
     }

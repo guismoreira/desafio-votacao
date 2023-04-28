@@ -22,6 +22,7 @@ public class Sessao {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pauta_id", referencedColumnName = "id")
     private Pauta pauta;
+    @Transient
     private Voto voto;
 
     @ManyToMany(fetch = FetchType.LAZY,

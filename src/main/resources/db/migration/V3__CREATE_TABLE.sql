@@ -19,7 +19,6 @@ create table sessao
     sessao_encerrada bit,
     total_votos_nao integer not null,
     total_votos_sim integer not null,
-    voto smallint,
     pauta_id bigint,
 primary key (id));
 
