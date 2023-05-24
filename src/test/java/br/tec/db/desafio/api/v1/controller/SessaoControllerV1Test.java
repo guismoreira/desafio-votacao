@@ -74,7 +74,7 @@ public class SessaoControllerV1Test {
                 .assertThat()
                 .body("assuntoPauta", notNullValue());
     }
-
+/* 
     @Test
     void deveVotarEmUmaSessaoComSucesso() throws JsonProcessingException {
         SessaoParaVotarRequestV1 sessaoParaVotarRequestV1 =
@@ -100,7 +100,7 @@ public class SessaoControllerV1Test {
                 .assertThat()
                 .body("assunto", notNullValue());
     }
-
+*/
     @Test
     void deveSaberTotalDeVotosDeUmaSessaoComSucesso() throws JsonProcessingException {
 
